@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"appengine"
 	"appengine/urlfetch"
 )
 
@@ -16,6 +17,7 @@ type Twilio struct {
 	AccountSid string
 	AuthToken  string
 	BaseUrl    string
+	Context	   appengine.Context
 }
 
 // Exception is a representation of a twilio exception.
@@ -27,9 +29,9 @@ type Exception struct {
 }
 
 // Create a new Twilio struct.
-func NewTwilioClient(accountSid, authToken string) *Twilio {
+func NewTwilioClient(accountSid, authToken string, context appengine.Context) *Twilio {
 	twilioUrl := "https://api.twilio.com/2010-04-01" // Should this be moved into a constant?
-	return &Twilio{accountSid, authToken, twilioUrl}
+	return &Twilio{accountSid, authToken, twilioUrl,context}
 }
 
 func (twilio *Twilio) post(formValues url.Values, twilioUrl string) (*http.Response, error) {
@@ -40,6 +42,6 @@ func (twilio *Twilio) post(formValues url.Values, twilioUrl string) (*http.Respo
 	req.SetBasicAuth(twilio.AccountSid, twilio.AuthToken)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	client := &urlfetch.Client{}
+	client := urlfetch.Client(twilio.Context)
 	return client.Do(req)
 }
