@@ -1,4 +1,4 @@
-// +build !appengine
+// +build appengine
 
 // Package gotwilio is a library for interacting with http://www.twilio.com/ API.
 package gotwilio
@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"appengine/urlfetch"
 )
 
 // Twilio stores basic information important for connecting to the
@@ -39,6 +40,6 @@ func (twilio *Twilio) post(formValues url.Values, twilioUrl string) (*http.Respo
 	req.SetBasicAuth(twilio.AccountSid, twilio.AuthToken)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	client := &http.Client{}
+	client := &urlfetch.Client{}
 	return client.Do(req)
 }
